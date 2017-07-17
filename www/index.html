@@ -1,0 +1,134 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="Content-Security-Policy" content="default-src * data: https:; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+  <script src="components/loader.js"></script>
+  <script src="lib/onsenui/js/onsenui.min.js"></script>
+
+  <link rel="stylesheet" href="components/loader.css">
+  <link rel="stylesheet" href="lib/onsenui/css/onsenui.css">
+  <link rel="stylesheet" href="lib/onsenui/css/onsen-css-components.css">
+  <link rel="stylesheet" href="css/style.css">
+
+  <script>
+		// ホットペッパーAPIのキー
+		var api_key = "YOUR_API_KEY";
+		
+		// 検索結果のレストラン一覧を入れます
+		var shops = [];
+		
+		// 画面が切り替わる度に呼ばれます
+		document.addEventListener('deviceready', function() {
+			window.ga.startTrackerWithId('UA-99999-99', 30);
+			window.ga.setAppVersion('1.0.1')
+		});
+		
+		document.addEventListener('init', function(event) {
+		  var page = event.target.id;
+		  if (window.ga) {
+			  window.ga.trackView(page);
+		  }
+		  // 最初の画面を表示した時の処理
+		  if (page == "list-page") {
+		    // レストラン取得ボタンを押した時の処理
+		    $("#getShops").on("click", () => {
+		      // 現在位置を取得します
+		      navigator.geolocation.getCurrentPosition((location) => {
+		      	window.ga.trackEvent('Shops', 'Get', 'Restaurants', 1)
+		        // 検索実行するURL
+		        var url = `http://webservice.recruit.co.jp/hotpepper/gourmet/v1/?key=${api_key}&lat=${location.coords.latitude}&lng=${location.coords.longitude}&range=5&order=4&format=json`;
+		        // Ajax実行
+		        $.ajax({
+		          type: 'GET',
+		          dataType: "json",
+		          url: url
+		        }).done((results) => {
+		          
+		          // 処理が成功した場合
+		          shops = results.results.shop;
+		          for (var i = 0; i < shops.length; i++) {
+		            var shop = shops[i];
+		            // リストに追加
+		            $("#shops").append(`<ons-list-item modifier="chevron" class="shop" tappable><span data-shop-id="${i}">${shop.name}</span></ons-list-item>`);
+		          }
+		        }).fail((err) => {
+		        	// 処理が失敗した場合
+		          alert("エラー！");
+		        });
+		      }, (err) => {
+		        
+		      });
+		    });
+		    
+		    // レストラン名をタップした時のイベント
+		    $(document).on("tap", ".shop span", (e) => {
+		    	
+		      // レストランデータを特定
+		      var index = $(e.target).data("shop-id");
+		      var shop = shops[index];
+		      
+		      
+		      // ページ移動
+		      var nav = document.querySelector('#navigator');
+		      nav.pushPage('detail.html', {data: {shop: shop}});
+		    });
+		  }
+		  
+		  // 詳細画面を表示した時の処理
+		  if (page == "detail-page") {
+		    // レストランデータを表示
+		    var shop = event.target.data.shop;
+		    window.ga.trackEvent('Shops', 'Show', 'Restaurant', shop.name)
+		    $("#shop-name").text(shop.name);
+		    $("#shop-address").text(shop.address);
+		  }
+		});
+  </script>
+</head>
+	<body>
+	  <ons-navigator id="navigator" page="list.html"></ons-navigator>
+	
+		<ons-template id="list.html">
+		  <ons-page id="list-page">
+		    <ons-toolbar>
+		      <div class="center">レストラン検索</div>
+		    </ons-toolbar>
+		
+		    <div class="content" style="text-align: center">
+		      <ons-list>
+		        <ons-list-header>
+		          <a href="http://webservice.recruit.co.jp/"><img src="http://webservice.recruit.co.jp/banner/hotpepper-s.gif" alt="ホットペッパー Webサービス" width="135" height="17" border="0" title="ホットペッパー Webサービス"></a>
+		        </ons-list-header>
+		        <ons-list-item>
+		          <div class="center">
+		            <ons-button id="getShops">レストラン取得</ons-button>
+		          </div>
+		        </ons-list-item>
+		        <div id="shops">
+		        </div>
+		      </ons-list>
+		    </div>
+		  </ons-page>
+		</ons-template>
+	
+		<ons-template id="detail.html">
+		  <ons-page id="detail-page">
+		    <ons-toolbar>
+		      <div class="left"><ons-back-button>戻る</ons-back-button></div>
+		      <div class="center shop-name">レストラン詳細</div>
+		    </ons-toolbar>
+		
+		    <div class="content" id="shop-info" style="text-align: center">
+		      <ons-list class="shop-info-list">
+		        <ons-list-header>名前</ons-list-header>
+		        <ons-list-item><span id="shop-name"></span></ons-list-item>
+		        <ons-list-header>住所</ons-list-header>
+		        <ons-list-item id="shop-address"></ons-list-item>
+		      </ons-list>
+		    </div>
+		  </ons-page>
+		</ons-template>
+	</body>
+</html>
