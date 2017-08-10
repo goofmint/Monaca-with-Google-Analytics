@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <meta http-equiv="Content-Security-Policy" content="default-src * data: https:; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+  <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: content: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
   <script src="components/loader.js"></script>
   <script src="lib/onsenui/js/onsenui.min.js"></script>
 
@@ -21,7 +21,7 @@
 		
 		// 画面が切り替わる度に呼ばれます
 		document.addEventListener('deviceready', function() {
-			window.ga.startTrackerWithId('UA-99999-99', 30);
+			window.ga.startTrackerWithId('UA-999999-99', 30);
 			window.ga.setAppVersion('1.0.1')
 		});
 		
@@ -63,10 +63,10 @@
 		    });
 		    
 		    // レストラン名をタップした時のイベント
-		    $(document).on("tap", ".shop span", (e) => {
+		    $(document).on("tap", ".shop", (e) => {
 		    	
 		      // レストランデータを特定
-		      var index = $(e.target).data("shop-id");
+		      var index = $(e.target).find("span").data("shop-id");
 		      var shop = shops[index];
 		      
 		      

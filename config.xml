@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<widget xmlns="http://www.w3.org/ns/widgets" id="jp.moongift.monaca.deeplink2" version="1.0.0">
-  <name>APIサンプル</name>
+<widget xmlns="http://www.w3.org/ns/widgets" id="kanako.ubukata.googleanalytics" version="1.0.0">
+  <name>GoogleAnalytics</name>
   <description>Made with Monaca (http://monaca.mobi)</description>
   <author/>
   <content src="index.html"/>
